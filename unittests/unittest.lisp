@@ -54,23 +54,37 @@
 
 (defpackage dsg-test)
 
-(in-package :om)
+(in-package :dsg-test)
 
-(defun dsg-test::test-+ ()
-  (dsg-test::check
-   ((= (+ 1 2) 3) "test1")
-   ((= (+ 1 2 3) 6) "test2")
-   ((= (+ -1 -3) -4) "test3")))
+(defvar *test-name* nil)
 
-(defun dsg-test::report-result (test label)
-  (let ((str (format nil "~&~:[FAIL~;pass~] ... ~a" test label)))
-    (write str :stream *om-stream* :escape nil))
-  (terpri *om-stream*)
-  test)
+(defmacro deftest (name parameters &body body)
+  "Define a test function. Within a test function we can call
+   other test functions or use 'check' to run individual test
+   cases."
+  `(defun ,name ,parameters
+    (let ((*test-name* (append *test-name* (list ',name))))
+      ,@body)))
 
-(defmacro dsg-test::check (&body test-cases)
-  `(progn
-     ,@(loop for tc in test-cases
-             collect `(dsg-test::report-result ,(car tc) ',(cadr tc)))))
+(defmacro check (&body forms)
+  "Run each expression in 'forms' as a test case."
+  `(combine-results
+    ,@(loop for f in forms collect `(report-result ,f ',f))))
 
-;(defmacro dsg-test::combine-results
+(defmacro combine-results (&body forms)
+  "Combine the results (as booleans) of evaluating 'forms' in order."
+  (with-gensyms (result)
+    `(let ((,result t))
+      ,@(loop for f in forms collect `(unless ,f (setf ,result nil)))
+      ,result)))
+
+(defun report-result (result form)
+  "Report the results of a single test case. Called by 'check'."
+  (let ((str (format nil "~&~:[FAIL~;pass~] ... ~a: ~a" result *test-name* form)))
+    (write str :stream om::*om-stream* :escape nil))
+  (terpri om::*om-stream*)
+  result)
+
+(defmacro with-gensyms ((&rest names) &body body)
+  `(let ,(loop for n in names collect `(,n (gensym)))
+     ,@body))

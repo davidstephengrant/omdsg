@@ -15,3 +15,11 @@
 ;;; 
 ;;;  You should have received a copy of the GNU General Public License
 ;;;  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+(in-package :om)
+
+(dsg-test::deftest dsg-test::test-+ ()
+  (dsg-test::check
+    (= (+ 1 2) 3)
+    (= (+ 1 2 3) 6)
+    (= (+ -1 -3) -4)))
