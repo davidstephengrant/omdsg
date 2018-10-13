@@ -63,7 +63,7 @@
 (setf *unittests* nil *test-name* nil)
 
 (om::defmethod! run-unittests ()
-            ;:icon 700
+                :icon 800
   (loop for test in *unittests*
         collect (funcall test) into results
         finally return (notany #'null results)))

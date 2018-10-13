@@ -11,14 +11,14 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="64"
    height="64"
-   viewBox="0 0 16.933333 16.933334"
+   viewBox="0 0 16.933333 16.933335"
    version="1.1"
    id="svg8"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
-   sodipodi:docname="icon.svg"
-   inkscape:export-filename="C:\Users\david\Desktop\image_64x64.png"
-   inkscape:export-xdpi="96.000008"
-   inkscape:export-ydpi="96.000008">
+   sodipodi:docname="700.svg"
+   inkscape:export-filename="C:\Users\david\Dropbox\Music_Projects\OM_LIBS\omdsg\resources\icon\700.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
   <defs
      id="defs2" />
   <sodipodi:namedview
@@ -29,8 +29,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="5.6"
-     inkscape:cx="21.857935"
-     inkscape:cy="34.651252"
+     inkscape:cx="-59.961947"
+     inkscape:cy="19.075488"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -41,7 +41,11 @@
      inkscape:window-height="1027"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -58,18 +62,19 @@
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="Staves"
-     style="display:inline" />
+     style="display:inline"
+     transform="translate(-0.45788688,4.121088)" />
   <g
      inkscape:label="Notes"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-280.06665)">
+     transform="translate(-0.45788688,-275.94557)">
     <g
        style="font-size:3.86623287px;font-family:serif;text-anchor:start;fill:currentColor;stroke-width:1.75729871"
        id="text881" />
     <g
        id="g1057"
-       transform="translate(-0.15119057,0.92963167)">
+       transform="matrix(1.0571731,0,0,1.0560443,-0.18601331,-19.309996)">
       <path
          sodipodi:nodetypes="ccccc"
          d="M 0.60907748,2.918471 H 16.626637 V 2.653119 H 0.60907748 Z"
