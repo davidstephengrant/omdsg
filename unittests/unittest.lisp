@@ -64,11 +64,17 @@
 
 (om::defmethod! run-unittests ()
                 :icon 800
+                :doc "
+Runs all unit tests registered for library omdsg.
+
+Returns t if all tests passed or nil if any failed.
+"
   (loop for test in *unittests*
         collect (funcall test) into results
         finally return (notany #'null results)))
 
 (defun add-unittest (test-function)
+  "Register a unit test to be included in run-unittests()."
   (setf *unittests* (append *unittests* (list test-function))))
 
 (defmacro deftest (name parameters &body body)
