@@ -18,23 +18,9 @@
 
 (in-package :om)
 
-;;; TEMPORARY PATCH FOR DEFGENERIC!
-(defmacro defgeneric! (name lambda-list &rest options-and-methods &environment env)
-   `(let ((thegenfun (defgeneric* ,name ,lambda-list ,.options-and-methods)))
-      (when (and *current-lib* (not (lib-fun-p (fdefinition ',name))))
-        (if (listp (icon (fdefinition ',name)))
-          (setf (icon (fdefinition ',name)) (car (icon (fdefinition ',name))))
-          (setf (icon (fdefinition ',name))
-                (list (icon (fdefinition ',name)) *current-lib*)))
-        (setf (lib-fun-p (fdefinition ',name)) (string-until-space (name *current-lib*))))
-      thegenfun))
-;;; END PATCH
-
-(defgeneric! dsg::split-chords (self)
-             (:icon 700)
-             (:documentation "Split the notes in a chord or chord-seq into chords consisting of one note each."))
-
 (defmethod! dsg::split-chords ((self chord-seq))
+            :icon 700
+            :doc "Split the notes in a chord or chord-seq into chords consisting of one note each."
   (let* ((chords-and-onsets (loop for chord in (inside self)
                                   for onset in (LOnset self)
                                   collect (dsg::split-chords chord) into chords
@@ -62,11 +48,9 @@
                  else collect note into non-unisons
                  finally return (x-append root non-unisons)))))
 
-(defgeneric! dsg::split-chords (self)
-             (:icon 700)
-             (:documentation "Remove unisons from chords in a chord or chord-seq (or list of notes)."))
-
 (defmethod! dsg::remove-unisons ((self chord-seq))
+            :icon 700
+            :doc "Remove unisons from chords in a chord or chord-seq (or list of notes)."
   (let* ((clone (clone (dsg::realize-offsets self)))
          (onsets (LOnset clone)))
     (setf clone (objfromobjs (mapcar #'dsg::remove-unisons (inside clone)) clone))
