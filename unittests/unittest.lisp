@@ -57,6 +57,19 @@
 (in-package :dsg-test)
 
 (defvar *test-name* nil)
+(defvar *unittests* nil)
+
+;; Set vars to nil (in case lib is reloaded)
+(setf *unittests* nil *test-name* nil)
+
+(om::defmethod! run-unittests ()
+            ;:icon 700
+  (loop for test in *unittests*
+        collect (funcall test) into results
+        finally return (notany #'null results)))
+
+(defun add-unittest (test-function)
+  (setf *unittests* (append *unittests* (list test-function))))
 
 (defmacro deftest (name parameters &body body)
   "Define a test function. Within a test function we can call

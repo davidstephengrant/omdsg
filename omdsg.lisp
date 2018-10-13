@@ -41,6 +41,7 @@
 ;  Syntax: ("sub package name" subpackages-list class-list function-list class-alias-list)
 (om::fill-library 
  '(("Chord Utilities" nil nil (split-chords remove-unisons realize-offsets) nil)
+   ("Unit Tests" nil nil (dsg-test::run-unittests) nil)
    ))
 
 ;; Dependencies

@@ -18,8 +18,16 @@
 
 (in-package :om)
 
-(dsg-test::deftest dsg-test::test-+ ()
-  (dsg-test::check
-    (= (+ 1 2) 3)
-    (= (+ 1 2 3) 6)
-    (= (+ -1 -3) -4)))
+(dsg-test::add-unittest
+ (dsg-test::deftest dsg-test::test-+ ()
+   (dsg-test::check
+     (= (+ 1 2) 3)
+     (= (+ 1 2 3) 6)
+     (= (+ -1 -3) -4))))
+
+(dsg-test::add-unittest
+ (dsg-test::deftest dsg-test::test-- ()
+   (dsg-test::check
+     (= (- 1 2) -1)
+     (= (- 1 2 3) -4)
+     (= (- -1 -3) 2))))
