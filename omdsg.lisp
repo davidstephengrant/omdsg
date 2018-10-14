@@ -1,20 +1,22 @@
-;;;; omdsg - A library of the author's tools for OpenMusic
-;;;; Copyright (C) 2018  David Stephen Grant
-;;;
-;;;  This file is part of omdsg.
-;;; 
-;;;  omdsg is free software: you can redistribute it and/or modify
-;;;  it under the terms of the GNU General Public License as published by
-;;;  the Free Software Foundation, either version 3 of the License, or
-;;;  any later version.
-;;; 
-;;;  omdsg is distributed in the hope that it will be useful,
-;;;  but WITHOUT ANY WARRANTY; without even the implied warranty of
-;;;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;;;  GNU General Public License for more details.
-;;; 
-;;;  You should have received a copy of the GNU General Public License
-;;;  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+;=========================================================================
+;  omdsg - A library of the author's tools for OpenMusic
+;  Copyright (C) 2018  David Stephen Grant
+;
+;    This file is part of omdsg.
+;
+;    omdsg is free software: you can redistribute it and/or modify
+;    it under the terms of the GNU General Public License as published by
+;    the Free Software Foundation, either version 3 of the License, or
+;    any later version.
+;
+;    omdsg is distributed in the hope that it will be useful,
+;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;    GNU General Public License for more details.
+;
+;    You should have received a copy of the GNU General Public License
+;    along with omdsg.  If not, see <https://www.gnu.org/licenses/>.
+;=========================================================================
 
 (defvar dsg)
 
@@ -33,6 +35,8 @@
        ;; Unit tests
        (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "unittests")) :name "unittest" :type "lisp")
        (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "unittests")) :name "test-chord-utils" :type "lisp")
+       ;; Documentation
+       (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "sources")) :name "reference" :type "lisp")
        ))
 
 (mapc #'compile&load dsg::*srcfiles*)
@@ -64,15 +68,15 @@
 <p>" (format nil "Version: ~A" (version dsg::*lib*)) "</p>"
               ) (name dsg::*lib*))
 
-;;; Generate reference documentation
-;;; Should be commented out before commit to repo
+;;; Generate documentation
+;; Should be commented out before commit to repo
 (gen-lib-reference dsg::*lib*)
 
-(print "
+(om-print "
  ==============================
  omdsg
  ==============================
  A library of the author's tools for OpenMusic
  Copyright (C) 2018  David Stephen Grant
  ==============================
-")
+" nil)
