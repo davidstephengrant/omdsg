@@ -1,3 +1,7 @@
+# Don't track reference documentation
+# It is generated upon loading library
+resources/reference/*
+
 ~*
 *~
 *#

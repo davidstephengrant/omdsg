@@ -20,13 +20,14 @@
 
 (defpackage dsg)
 
-(in-package :dsg)
+(in-package :om)
 
-;; Load sources
+(defvar dsg::*lib* (find-library "omdsg"))
 
-(defvar *omdsg-files* nil)
+;;; Load sources
+(defvar dsg::*srcfiles* nil)
 
-(setf *omdsg-files*
+(setf dsg::*srcfiles*
       (list
        (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "sources")) :name "chord-utils" :type "lisp")
        ;; Unit tests
@@ -34,16 +35,33 @@
        (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "unittests")) :name "test-chord-utils" :type "lisp")
        ))
 
-(mapc #'om::compile&load *omdsg-files*)
+(mapc #'compile&load dsg::*srcfiles*)
 
-;; Setup menu structure and (sub) packages
-
-;  Syntax: ("sub package name" subpackages-list class-list function-list class-alias-list)
-(om::fill-library 
- '(("Chord Utilities" nil nil (split-chords remove-unisons realize-offsets) nil)
+;;; Setup menu structure and (sub) packages
+;; Syntax: ("sub package name" subpackages-list class-list function-list class-alias-list)
+(fill-library 
+ '(("Chord Utilities" nil nil (dsg::split-chords dsg::remove-unisons dsg::realize-offsets) nil)
    ("Unit Tests" nil nil (dsg-test::run-unittests) nil)
    ))
 
-;; Dependencies
-
+;;; Dependencies
 ;(require-library "omdsg")
+
+;;; Documentation
+(set-lib-release 0.01 dsg::*lib*)
+
+;; Lib docstring for {$RESOURCES}/reference/index.html
+(doc-library (def-lib-doc-string dsg::*lib*) dsg::*lib*)
+
+;;; Generate reference documentation
+;;; Should be commented out before commit to repo
+(gen-lib-reference dsg::*lib*)
+
+(print "
+ ==============================
+ omdsg
+ ==============================
+ A library of the author's tools for OpenMusic
+ Copyright (C) 2018  David Stephen Grant
+ ==============================
+")
