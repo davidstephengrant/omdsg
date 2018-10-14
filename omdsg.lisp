@@ -51,7 +51,18 @@
 (set-lib-release 0.01 dsg::*lib*)
 
 ;; Lib docstring for {$RESOURCES}/reference/index.html
-(doc-library (def-lib-doc-string dsg::*lib*) dsg::*lib*)
+(doc-library (concatenate 'string
+                          "<p>omdsg is a library of the author's tools for OpenMusic.</p>
+
+<p>Functions and classes are loaded into the package 'dsg', and should be referenced with the prefix 'dsg::', e.g. 'dsg::split-chords'. They can also be found in the patch menu bar or context menu (Classes/Functions > Libraries > omdsg).</p>
+
+<p>The library source code repository is on <a href=\"https://github.com/davidstephengrant/omdsg\" target=\"_blank\">GitHub</a>, where the most recent releases may be downloaded. Please report any bugs/issues in the repository issue tracker.</p>
+
+<p>Copyright © 2018  David Stephen Grant</p>
+
+<p>omdsg is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version.</p>
+<p>" (format nil "Version: ~A" (version dsg::*lib*)) "</p>"
+              ) (name dsg::*lib*))
 
 ;;; Generate reference documentation
 ;;; Should be commented out before commit to repo

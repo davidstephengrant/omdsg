@@ -20,7 +20,11 @@
 
 (defmethod! dsg::split-chords ((self chord-seq))
             :icon 700
-            :doc "Split the notes in a chord or chord-seq into chords consisting of one note each."
+            :doc "Split chords into single-note chords.
+
+<self> can be a chord (yield a list of chords) or a chord-seq (yields a new chord-seq).
+"
+            :indoc '("chord or chord-seq")
   (let* ((chords-and-onsets (loop for chord in (inside self)
                                   for onset in (LOnset self)
                                   collect (dsg::split-chords chord) into chords
@@ -50,7 +54,11 @@
 
 (defmethod! dsg::remove-unisons ((self chord-seq))
             :icon 700
-            :doc "Remove unisons from chords in a chord or chord-seq (or list of notes)."
+            :doc "Removes unisons from a chord, chord-seq or list of notes.
+
+In a chord-seq notes must be in the same chord to be detected as unison.
+"
+            :indoc '("chord, chord-seq or list of notes")
   (let* ((clone (clone (dsg::realize-offsets self)))
          (onsets (LOnset clone)))
     (setf clone (objfromobjs (mapcar #'dsg::remove-unisons (inside clone)) clone))
