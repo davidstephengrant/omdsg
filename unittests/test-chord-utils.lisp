@@ -21,15 +21,46 @@
 (in-package :om)
 
 (dsg-test::add-unittest
- (dsg-test::deftest dsg-test::test-+ ()
-   (dsg-test::check
-     (= (+ 1 2) 3)
-     (= (+ 1 2 3) 6)
-     (= (+ -1 -3) -4))))
-
-(dsg-test::add-unittest
- (dsg-test::deftest dsg-test::test-- ()
-   (dsg-test::check
-     (= (- 1 2) -1)
-     (= (- 1 2 3) -4)
-     (= (- -1 -3) 2))))
+ (dsg-test::deftest dsg-test::split-chords ()
+     (dsg-test::check
+       ;; Single chord consisting of one note
+       (let* ((original (progn
+                          (let ((cseq (mki 'chord-seq :empty t)))
+                            (setf (LMidic cseq) '((6000)))
+                            cseq)))
+              (actual (dsg::split-chords original)))
+         (dsg::equivalent original actual))
+       ;; Single chord
+       (let* ((original (progn
+                          (let ((cseq (mki 'chord-seq :empty t)))
+                            (setf (LMidic cseq) '((6000 6400 6700)))
+                            cseq)))
+              (expected (progn
+                          (let ((cseq (mki 'chord-seq :empty t)))
+                            (setf (LMidic cseq) '((6000) (6400) (6700)))
+                            (setf (LOnset cseq) '(0 0 0))
+                            cseq)))
+              (actual (dsg::split-chords original)))
+         (dsg::equivalent expected actual))
+       ;; Sequence of chords
+       (let* ((original (progn
+                          (let ((cseq (mki 'chord-seq :empty t)))
+                            (setf (LMidic cseq) '((6000 6400 6700) (6000) (6400 6700)))
+                            (setf (LOnset cseq) '(1000 1500 1700))
+                            (setf (LDur cseq) '((100 500 750) (500) (750 500)))
+                            (setf (LVel cseq) '((100 120 110) (90) (80 70)))
+                            (setf (LOffset cseq) '((100 0 110) (90) (80 70)))
+                            (setf (LChan cseq) '((1 2 3) (4) (5 6)))
+                            cseq)))
+              (expected (progn
+                          (let ((cseq (mki 'chord-seq :empty t)))
+                            (setf (LMidic cseq) '((6000) (6400) (6700) (6000) (6400) (6700)))
+                            (setf (LOnset cseq) '(1000 1000 1000 1500 1700 1700))
+                            (setf (LDur cseq) '((100) (500) (750) (500) (750) (500)))
+                            (setf (LVel cseq) '((100) (120) (110) (90) (80) (70)))
+                            (setf (LOffset cseq) '((100) (0) (110) (90) (80) (70)))
+                            (setf (LChan cseq) '((1) (2) (3) (4) (5) (6)))
+                            cseq)))
+              (actual (dsg::split-chords original)))
+         (dsg::equivalent expected actual))
+       )))

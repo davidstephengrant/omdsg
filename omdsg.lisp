@@ -31,9 +31,11 @@
 
 (setf dsg::*srcfiles*
       (list
+       (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "sources")) :name "basic-tools" :type "lisp")
        (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "sources")) :name "chord-utils" :type "lisp")
        ;; Unit tests
        (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "unittests")) :name "unittest" :type "lisp")
+       (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "unittests")) :name "test-basic-tools" :type "lisp")
        (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "unittests")) :name "test-chord-utils" :type "lisp")
        ;; Documentation
        (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "sources")) :name "reference" :type "lisp")
@@ -44,7 +46,8 @@
 ;;; Setup menu structure and (sub) packages
 ;; Syntax: ("sub package name" subpackages-list class-list function-list class-alias-list)
 (fill-library 
- '(("Chord Utilities" nil nil (dsg::split-chords dsg::remove-unisons dsg::realize-offsets) nil)
+ '(("Basic Tools" nil nil (dsg::equivalent) nil)
+   ("Chord Utilities" nil nil (dsg::split-chords dsg::remove-unisons dsg::realize-offsets) nil)
    ("Unit Tests" nil nil (dsg-test::run-unittests) nil)
    ))
 
