@@ -22,12 +22,33 @@
 
 (defmethod! dsg::equivalent ((a chord-seq) (b chord-seq))
             :icon 100
-            (labels ((self-to-datalist (self)
-                       (list (LMidic self)
-                             (LOnset self)
-                             (LDur self)
-                             (LVel self)
-                             (LOffset self)
-                             (LChan self))))
-              (equalp (self-to-datalist a)
-                      (self-to-datalist b))))
+            (notany #'null (mapcar #'equalp
+                                   (dsg::self-to-data (dsg::order-chords a))
+                                   (dsg::self-to-data (dsg::order-chords b)))))
+
+(defmethod! dsg::order-chords ((self chord))
+            :icon 700
+  (let ((out-chrd (mki 'chord :empty t))
+        (data (sort (mapcar #'(lambda (pitch data) (cons pitch data))
+          (LMidic self)
+          (inside self))
+                   #'< :key #'car)))
+    (setf (inside out-chrd) (mapcar #'cdr data))
+    out-chrd))
+
+(defmethod! dsg::order-chords ((self chord-seq))
+            (let ((out-cs (mki 'chord-seq :empty t))
+                  (data (mapcar #'(lambda (ons dat) (cons ons dat))
+                                (lonset self)
+                                (mapcar #'dsg::order-chords (inside self)))))
+              (setf (inside out-cs) (mapcar #'cdr data))
+              (setf (lonset out-cs) (mapcar #'car data))
+              out-cs))
+
+(defmethod dsg::self-to-data ((self chord-seq))
+  (list (LMidic self)
+        (LOnset self)
+        (LDur self)
+        (LVel self)
+        (LOffset self)
+        (LChan self)))

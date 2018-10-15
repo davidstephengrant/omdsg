@@ -48,7 +48,12 @@
 ;; Syntax: ("sub package name" subpackages-list class-list function-list class-alias-list)
 (fill-library 
  '(("Basic Tools" nil nil (dsg::equivalent) nil)
-   ("Chord Utilities" nil nil (dsg::split-chords dsg::remove-unisons dsg::realize-offsets) nil)
+   ("Chord Utilities" nil nil (dsg::order-chords
+                               dsg::realize-offsets
+                               dsg::remove-unisons
+                               dsg::split-chords
+                               dsg::truncate-overlaps
+                               ) nil)
    ("Unit Tests" nil nil (dsg-test::run-unittests) nil)
    ))
 
@@ -64,7 +69,7 @@
 
 <p>The library source code repository is on <a href=\"https://github.com/davidstephengrant/omdsg\" target=\"_blank\">GitHub</a>, where the most recent releases may be downloaded. Please report any bugs/issues in the repository issue tracker.</p>
 
-<p>Copyright © 2018  David Stephen Grant</p>
+<p>Copyright (C) 2018  David Stephen Grant</p>
 
 <p>omdsg is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version.</p>
 <p>" (format nil "Version: ~A" (version dsg::*lib*)) "</p>"

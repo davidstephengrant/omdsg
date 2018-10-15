@@ -96,3 +96,48 @@ In a chord-seq notes must be in the same chord to be detected as unison.
     (setf (LOnset clone) (mapcar #'+ (notEndLOnset clone) (flat (LOffset clone)))) ; Add offset to onset
     (setf (LOffset clone) (mapcar #'(lambda (offset) (list 0)) (LOffset clone)))   ; Set offsets to zero
     (align-chords (temporal-sort clone) 0)))
+
+(defmethod! dsg::truncate-overlaps ((self chord-seq) &optional (mode 'truncate))
+            :icon 700
+            :initvals (list (make-instance 'chord-seq) 'truncate)
+            :indoc '("chord-seq" "symbol ('truncate or 'extend)")
+            :menuins '((1 (("truncate" 'truncate) ("extend" 'extend))))
+            :doc "Removes overlapping notes in a chord-seq."
+            (let* ((out-cs (mki 'chord-seq :empty t))
+                  (adj-self (temporal-sort (dsg::split-chords (dsg::remove-unisons (dsg::realize-offsets (clone self))))))
+                  (data (dsg::truncate-if-overlap (dsg::chord-seq->onset-chord-pairs adj-self))))
+              (setf (inside out-cs) (mapcar #'cdr data))
+              (setf (lonset out-cs) (mapcar #'car data))
+              (align-chords out-cs 0)))
+
+(defmethod dsg::chord-seq->onset-chord-pairs ((self chord-seq))
+  "Takes a chord-seq and returns a list of dotted pairs: (onset . chord)."
+  (mapcar #'(lambda (onset data) (cons onset data))
+          (LOnset self)
+          (inside self)))
+
+(defun dsg::truncate-if-overlap (lst)
+  "
+Takes a list of (onset . chord) which represents a chord-seq. Use chord-seq->onset-chord-pairs.
+"
+  (labels ((recursive-test (elem rest)
+             ;; If this is the last note, it cannot overlap with any following...
+             ;  Return the note unchanged
+             (cond ((null rest) elem)
+                   (t (cond ((> (caar rest) (+ (car elem) (dur (car (inside (cdr elem))))))
+                             ;; If next note is beyond the end of this note,
+                             ;  there is no overlap and we can return this
+                             ;  note unchanged
+                             elem)
+                            ((not (equal (LMidic (cdr elem)) (LMidic (cdar rest))))
+                             ;; If next note is a different pitch we move on
+                             ;  to the following note
+                             (recursive-test elem (cdr rest)))
+                            ;; Next note is in range and the same pitch, i.e.
+                            ;  we have an overlap. Adjust dur of this note to
+                            ;  end at onset of next note.
+                            (t (let ((clone (clone (cdr elem))))
+                                 (setf (LDur clone) (list (- (caar rest) (car elem))))
+                                 (cons (car elem) clone))))))))
+    (cond ((null lst) nil)
+          (t (cons (recursive-test (car lst) (cdr lst)) (dsg::truncate-if-overlap (cdr lst)))))))

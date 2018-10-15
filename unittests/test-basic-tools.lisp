@@ -28,9 +28,16 @@
                  (setf (LMidic cseq) '((6000 6400 6700)))
                  cseq)))
           (b (progn
+               ;; Same notes but different order
                (let ((cseq (mki 'chord-seq :empty t)))
-                 (setf (LMidic cseq) '((6000) (6400) (6700)))
+                 (setf (LMidic cseq) '((6400 6700 6000)))
+                 cseq)))
+          (c (progn
+               ;; Different note(s)
+               (let ((cseq (mki 'chord-seq :empty t)))
+                 (setf (LMidic cseq) '((6000 6500 6700)))
                  cseq))))
      (dsg-test::check
        (dsg::equivalent a (clone a))
-       (not (dsg::equivalent a b))))))
+       (dsg::equivalent a b)
+       (not (dsg::equivalent a c))))))

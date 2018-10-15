@@ -64,3 +64,23 @@
               (actual (dsg::split-chords original)))
          (dsg::equivalent expected actual))
        )))
+
+(dsg-test::add-unittest
+ (dsg-test::deftest dsg-test::truncate-overlaps ()
+   (dsg-test::check
+     ;; Mode: truncate
+     (let* ((original (progn
+                        (let ((cseq (mki 'chord-seq :empty t)))
+                          (setf (LMidic cseq) '((6000 6400) 6400))
+                          (setf (LOnset cseq) '(0 500))
+                          (setf (LDur cseq) '((1000 2500) 100))
+                          cseq)))
+            (expected (progn
+                        (let ((cseq (mki 'chord-seq :empty t)))
+                          (setf (LMidic cseq) '((6000 6400) 6400))
+                          (setf (LOnset cseq) '(0 500))
+                          (setf (LDur cseq) '((1000 500) 100))
+                          cseq)))
+            (actual (dsg::truncate-overlaps original)))
+       (dsg::equivalent expected actual))
+     )))
