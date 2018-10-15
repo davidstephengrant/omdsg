@@ -105,7 +105,7 @@ In a chord-seq notes must be in the same chord to be detected as unison.
             :doc "Removes overlapping notes in a chord-seq."
             (let* ((out-cs (mki 'chord-seq :empty t))
                   (adj-self (temporal-sort (dsg::split-chords (dsg::remove-unisons (dsg::realize-offsets (clone self))))))
-                  (data (dsg::truncate-if-overlap (dsg::chord-seq->onset-chord-pairs adj-self))))
+                  (data (dsg::truncate-if-overlap (dsg::chord-seq->onset-chord-pairs adj-self) mode)))
               (setf (inside out-cs) (mapcar #'cdr data))
               (setf (lonset out-cs) (mapcar #'car data))
               (align-chords out-cs 0)))
@@ -116,28 +116,60 @@ In a chord-seq notes must be in the same chord to be detected as unison.
           (LOnset self)
           (inside self)))
 
-(defun dsg::truncate-if-overlap (lst)
+(defun dsg::truncate-if-overlap (lst mode)
   "
-Takes a list of (onset . chord) which represents a chord-seq. Use chord-seq->onset-chord-pairs.
+Takes a list of dotted pairs (onset . chord) which represents a chord-seq.
+Use chord-seq->onset-chord-pairs to generate <lst>.
 "
-  (labels ((recursive-test (elem rest)
-             ;; If this is the last note, it cannot overlap with any following...
-             ;  Return the note unchanged
-             (cond ((null rest) elem)
-                   (t (cond ((> (caar rest) (+ (car elem) (dur (car (inside (cdr elem))))))
-                             ;; If next note is beyond the end of this note,
-                             ;  there is no overlap and we can return this
-                             ;  note unchanged
-                             elem)
-                            ((not (equal (LMidic (cdr elem)) (LMidic (cdar rest))))
-                             ;; If next note is a different pitch we move on
-                             ;  to the following note
-                             (recursive-test elem (cdr rest)))
-                            ;; Next note is in range and the same pitch, i.e.
-                            ;  we have an overlap. Adjust dur of this note to
-                            ;  end at onset of next note.
-                            (t (let ((clone (clone (cdr elem))))
-                                 (setf (LDur clone) (list (- (caar rest) (car elem))))
-                                 (cons (car elem) clone))))))))
+  (labels ((recursive-test (elem rest mode)
+             ;; May return one or two notes, so always return a list
+             ;; (even when only one note)
+             (cond
+              ;; If this is the last note, it cannot overlap with any following...
+              ;; Return the note unchanged
+              ((null rest) (list elem))
+              (t (cond
+                  ;; If next note's onset is beyond the end of
+                  ;; this note, there is no overlap and we can
+                  ;; return this note unchanged
+                  ((> (caar rest) (+ (car elem) (dur (car (inside (cdr elem))))))
+                   (list elem))
+                  ;; If next note is a different pitch we move on
+                  ;; to the following note
+                  ((not (equal (LMidic (cdr elem)) (LMidic (cdar rest))))
+                   (recursive-test elem (cdr rest) mode))
+                  ;; Next note is in range and the same pitch, i.e.
+                  ;; we have an overlap
+                  (t (let ((clone (clone (cdr elem)))
+                           (clone-next (clone (cdar rest)))
+                           (return-lst nil))
+                       ;; If mode is set to 'extend and the end of this note
+                       ;; is beyond the end of next note, we want to extend
+                       ;; the duration of next note eqivalently
+                       (if (and (equal mode 'extend)
+                                (> (+ (car elem) (car (LDur clone)))
+                                   (+ (caar rest) (car (LDur clone-next)))))
+                           (progn
+                             (setf (LDur clone-next) (list (- (+ (car elem)
+                                                                 (car (LDur clone)))
+                                                              (caar rest))))
+                             ;; Add next note to return-lst
+                             (setf return-lst (cons (cons (caar rest) clone-next) return-lst))))
+                       (setf (LDur clone) (list (- (caar rest) (car elem))))
+                       ;; cons this note onto return-list
+                       ;; If mode is set to 'extend, return-lst will now
+                       ;; consist of two notes. Otherwise one.
+                       (cons (cons (car elem) clone) return-lst))))))))
+
     (cond ((null lst) nil)
-          (t (cons (recursive-test (car lst) (cdr lst)) (dsg::truncate-if-overlap (cdr lst)))))))
+          (t (let ((adjusted-notes (recursive-test (car lst) (cdr lst) mode)))
+               ;; Pop one note off adjusted-notes
+               (cons (pop adjusted-notes)
+                     ;; If recursive-test only returned one note,
+                     ;; adjusted-notes will now be nil...
+                     (cond ((null adjusted-notes)
+                            (dsg::truncate-if-overlap (cdr lst) mode))
+                           ;; ...however, if there another note still
+                           ;; remains, we want to replace the first note
+                           ;; in the cdr of list with it
+                           (t (dsg::truncate-if-overlap (cons (pop adjusted-notes) (cddr lst)) mode)))))))))
