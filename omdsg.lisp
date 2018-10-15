@@ -25,6 +25,7 @@
 (in-package :om)
 
 (defvar dsg::*lib* (find-library "omdsg"))
+(set-lib-release 0.02 dsg::*lib*)
 
 ;;; Load sources
 (defvar dsg::*srcfiles* nil)
@@ -55,8 +56,6 @@
 ;(require-library "omdsg")
 
 ;;; Documentation
-(set-lib-release 0.01 dsg::*lib*)
-
 ;; Lib docstring for {$RESOURCES}/reference/index.html
 (doc-library (concatenate 'string
                           "<p>omdsg is a library of the author's tools for OpenMusic.</p>
