@@ -141,16 +141,16 @@ Use chord-seq->onset-chord-pairs to generate <lst>.
                (cons (car notepair2) clone)))
            (check-notes (elem rest mode accum)
              (cond ((null rest) (cons elem (nreverse accum)))
+                   ((not (overlap-p elem (car rest))) (cons elem (nreverse accum)))
                    ((not (enharmonic-p elem (car rest))) (check-notes elem (cdr rest) mode (cons (car rest) accum)))
                    ((overlap-p elem (car rest))
                     (if (and (eql mode 'extend)
                              (second-ends-before-first-p elem (car rest)))
                         (cons (trunc-first elem (car rest)) (nreverse (cons (extend-second elem (car rest)) accum)))
                       (cons (trunc-first elem (car rest)) (nreverse (cons (car rest) accum)))))
-                   (t (check-notes elem (cdr rest) mode accum)))))
+                   (t (check-notes elem (cdr rest) mode (cons (car rest) accum))))))
 
     (cond ((null lst) nil)
           (t (let* ((adjusted-notes (check-notes (car lst) (cdr lst) mode nil))
                     (new-lst (x-append adjusted-notes (last-n lst (- (length lst) (length adjusted-notes))))))
                (cons (pop new-lst) (dsg::truncate-if-overlap new-lst mode)))))))
-

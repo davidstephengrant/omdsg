@@ -309,3 +309,22 @@
   (dsg-test::unittest dsg-test::truncate-overlaps---intermittent--extend--different-notes
                       ;; PASS CONDITION
                       (dsg::equivalent original result)))
+
+(let* ((original (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((8200) (8300) (7000) (8200) (8100)))
+                     (setf (LOnset cseq) '(0 661 950 1500 1700 3100))
+                     (setf (LDur cseq) '((1500) (1053) (2150) (1500) (1238)))
+                     cseq)))
+       (expected (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((8200) (8300) (7000) (8200) (8100)))
+                     (setf (LOnset cseq) '(0 661 950 1500 1700 3100))
+                     (setf (LDur cseq) '((1500) (1053) (2150) (1500) (1238)))
+                     cseq)))
+       (result (dsg::truncate-overlaps original)))
+
+  ;;                  ;; TEST NAME
+  (dsg-test::unittest dsg-test::truncate-overlaps---schaathun-ex1--trunc
+                      ;; PASS CONDITION
+                      (dsg::equivalent expected result)))
