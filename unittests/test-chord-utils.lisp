@@ -73,39 +73,239 @@
                       (dsg::equivalent expected result)))
 
 (let* ((original (progn
-                        (let ((cseq (mki 'chord-seq :empty t)))
-                          (setf (LMidic cseq) '((6000 6400) 6400))
-                          (setf (LOnset cseq) '(0 500))
-                          (setf (LDur cseq) '((1000 2500) 100))
-                          cseq)))
-            (expected (progn
-                        (let ((cseq (mki 'chord-seq :empty t)))
-                          (setf (LMidic cseq) '((6000 6400) 6400))
-                          (setf (LOnset cseq) '(0 500))
-                          (setf (LDur cseq) '((1000 500) 100))
-                          cseq)))
-            (result (dsg::truncate-overlaps original)))
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000)))
+                     cseq)))
+       (result (dsg::truncate-overlaps original 'truncate)))
 
   ;;                  ;; TEST NAME
-  (dsg-test::unittest dsg-test::truncate-overlaps---mode-truncate
+  (dsg-test::unittest dsg-test::truncate-overlaps---single-note--truncate
+                      ;; PASS CONDITION
+                      (dsg::equivalent original result)))
+
+(let* ((original (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000)))
+                     cseq)))
+       (result (dsg::truncate-overlaps original 'extend)))
+
+  ;;                  ;; TEST NAME
+  (dsg-test::unittest dsg-test::truncate-overlaps---single-note--extend
+                      ;; PASS CONDITION
+                      (dsg::equivalent original result)))
+
+(let* ((original (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000 6400) 6400))
+                     (setf (LOnset cseq) '(0 500))
+                     (setf (LDur cseq) '((1000 2500) 100))
+                     cseq)))
+       (expected (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000 6400) 6400))
+                     (setf (LOnset cseq) '(0 500))
+                     (setf (LDur cseq) '((1000 500) 100))
+                     cseq)))
+       (result (dsg::truncate-overlaps original)))
+
+  ;;                  ;; TEST NAME
+  (dsg-test::unittest dsg-test::truncate-overlaps---no-mode-argument
                       ;; PASS CONDITION
                       (dsg::equivalent expected result)))
 
 (let* ((original (progn
-                        (let ((cseq (mki 'chord-seq :empty t)))
-                          (setf (LMidic cseq) '((6000 6400) 6400))
-                          (setf (LOnset cseq) '(0 500))
-                          (setf (LDur cseq) '((1000 2500) 100))
-                          cseq)))
-            (expected (progn
-                        (let ((cseq (mki 'chord-seq :empty t)))
-                          (setf (LMidic cseq) '((6000 6400) 6400))
-                          (setf (LOnset cseq) '(0 500))
-                          (setf (LDur cseq) '((1000 500) 2000))
-                          cseq)))
-            (result (dsg::truncate-overlaps original 'extend)))
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000 6400) 6400))
+                     (setf (LOnset cseq) '(0 500))
+                     (setf (LDur cseq) '((1000 2500) 100))
+                     cseq)))
+       (expected (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000 6400) 6400))
+                     (setf (LOnset cseq) '(0 500))
+                     (setf (LDur cseq) '((1000 500) 100))
+                     cseq)))
+       (result (dsg::truncate-overlaps original 'truncate)))
 
   ;;                  ;; TEST NAME
-  (dsg-test::unittest dsg-test::truncate-overlaps---mode-extend
+  (dsg-test::unittest dsg-test::truncate-overlaps---trunc
                       ;; PASS CONDITION
                       (dsg::equivalent expected result)))
+
+(let* ((original (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000 6400) 6400))
+                     (setf (LOnset cseq) '(0 500))
+                     (setf (LDur cseq) '((1000 2500) 100))
+                     cseq)))
+       (expected (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000 6400) 6400))
+                     (setf (LOnset cseq) '(0 500))
+                     (setf (LDur cseq) '((1000 500) 2000))
+                     cseq)))
+       (result (dsg::truncate-overlaps original 'extend)))
+
+  ;;                  ;; TEST NAME
+  (dsg-test::unittest dsg-test::truncate-overlaps---extend
+                      ;; PASS CONDITION
+                      (dsg::equivalent expected result)))
+
+(let* ((original (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000 6400) (6400 6800)))
+                     (setf (LOnset cseq) '(0 500))
+                     (setf (LDur cseq) '((1000 2500) (100 2500)))
+                     cseq)))
+       (expected (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000 6400) (6400 6800)))
+                     (setf (LOnset cseq) '(0 500))
+                     (setf (LDur cseq) '((1000 500) (100 2500)))
+                     cseq)))
+       (result (dsg::truncate-overlaps original)))
+
+  ;;                  ;; TEST NAME
+  (dsg-test::unittest dsg-test::truncate-overlaps---chord-to-chord--trunc
+                      ;; PASS CONDITION
+                      (dsg::equivalent expected result)))
+
+(let* ((original (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000 6400) (6400 6800)))
+                     (setf (LOnset cseq) '(0 500))
+                     (setf (LDur cseq) '((1000 2500) (100 2500)))
+                     cseq)))
+       (expected (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000 6400) (6400 6800)))
+                     (setf (LOnset cseq) '(0 500))
+                     (setf (LDur cseq) '((1000 500) (2000 2500)))
+                     cseq)))
+       (result (dsg::truncate-overlaps original 'extend)))
+
+  ;;                  ;; TEST NAME
+  (dsg-test::unittest dsg-test::truncate-overlaps---chord-to-chord--extend
+                      ;; PASS CONDITION
+                      (dsg::equivalent expected result)))
+
+(let* ((original (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000) (6000) (6000)))
+                     (setf (LOnset cseq) '(0 500 1000))
+                     (setf (LDur cseq) '((1000) (1000) (1000)))
+                     cseq)))
+       (expected (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000) (6000) (6000)))
+                     (setf (LOnset cseq) '(0 500 1000))
+                     (setf (LDur cseq) '((500) (500) (1000)))
+                     cseq)))
+       (result (dsg::truncate-overlaps original)))
+
+  ;;                  ;; TEST NAME
+  (dsg-test::unittest dsg-test::truncate-overlaps---seq-overlaps
+                      ;; PASS CONDITION
+                      (dsg::equivalent expected result)))
+
+(let* ((original (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000) (6000) (6000)))
+                     (setf (LOnset cseq) '(0 1000 2000))
+                     (setf (LDur cseq) '((5000) (3000) (1000)))
+                     cseq)))
+       (expected (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000) (6000) (6000)))
+                     (setf (LOnset cseq) '(0 1000 2000))
+                     (setf (LDur cseq) '((1000) (1000) (1000)))
+                     cseq)))
+       (result (dsg::truncate-overlaps original)))
+
+  ;;                  ;; TEST NAME
+  (dsg-test::unittest dsg-test::truncate-overlaps---fan--trunc
+                      ;; PASS CONDITION
+                      (dsg::equivalent expected result)))
+
+(let* ((original (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000) (6000) (6000)))
+                     (setf (LOnset cseq) '(0 1000 2000))
+                     (setf (LDur cseq) '((5000) (3000) (1000)))
+                     cseq)))
+       (expected (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000) (6000) (6000)))
+                     (setf (LOnset cseq) '(0 1000 2000))
+                     (setf (LDur cseq) '((1000) (1000) (3000)))
+                     cseq)))
+       (result (dsg::truncate-overlaps original 'extend)))
+
+  ;;                  ;; TEST NAME
+  (dsg-test::unittest dsg-test::truncate-overlaps---fan--extend
+                      ;; PASS CONDITION
+                      (dsg::equivalent expected result)))
+
+(let* ((original (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000) (6000) (6000)))
+                     (setf (LOnset cseq) '(0 1000 2000))
+                     (setf (LDur cseq) '((5000) (200) (200)))
+                     cseq)))
+       (expected (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000) (6000) (6000)))
+                     (setf (LOnset cseq) '(0 1000 2000))
+                     (setf (LDur cseq) '((1000) (200) (200)))
+                     cseq)))
+       (result (dsg::truncate-overlaps original)))
+
+  ;;                  ;; TEST NAME
+  (dsg-test::unittest dsg-test::truncate-overlaps---intermittent--trunc
+                      ;; PASS CONDITION
+                      (dsg::equivalent expected result)))
+
+(let* ((original (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000) (6100) (6200)))
+                     (setf (LOnset cseq) '(0 1000 2000))
+                     (setf (LDur cseq) '((5000) (200) (200)))
+                     cseq)))
+       (result (dsg::truncate-overlaps original)))
+
+  ;;                  ;; TEST NAME
+  (dsg-test::unittest dsg-test::truncate-overlaps---intermittent--trunc--different-notes
+                      ;; PASS CONDITION
+                      (dsg::equivalent original result)))
+
+(let* ((original (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000) (6000) (6000)))
+                     (setf (LOnset cseq) '(0 1000 2000))
+                     (setf (LDur cseq) '((5000) (200) (200)))
+                     cseq)))
+       (expected (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000) (6000) (6000)))
+                     (setf (LOnset cseq) '(0 1000 2000))
+                     (setf (LDur cseq) '((1000) (1000) (3000)))
+                     cseq)))
+       (result (dsg::truncate-overlaps original 'extend)))
+
+  ;;                  ;; TEST NAME
+  (dsg-test::unittest dsg-test::truncate-overlaps---intermittent--extend
+                      ;; PASS CONDITION
+                      (dsg::equivalent expected result)))
+
+(let* ((original (progn
+                   (let ((cseq (mki 'chord-seq :empty t)))
+                     (setf (LMidic cseq) '((6000) (6100) (6200)))
+                     (setf (LOnset cseq) '(0 1000 2000))
+                     (setf (LDur cseq) '((5000) (200) (200)))
+                     cseq)))
+       (result (dsg::truncate-overlaps original 'extend)))
+
+  ;;                  ;; TEST NAME
+  (dsg-test::unittest dsg-test::truncate-overlaps---intermittent--extend--different-notes
+                      ;; PASS CONDITION
+                      (dsg::equivalent original result)))
