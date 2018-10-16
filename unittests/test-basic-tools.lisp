@@ -20,24 +20,32 @@
 
 (in-package :om)
 
-(dsg-test::add-unittest
- (dsg-test::deftest dsg-test::equivalent-chord-seq ()
-   ;; Very basic test for the time being...
-   (let* ((a (progn
-               (let ((cseq (mki 'chord-seq :empty t)))
-                 (setf (LMidic cseq) '((6000 6400 6700)))
-                 cseq)))
-          (b (progn
-               ;; Same notes but different order
-               (let ((cseq (mki 'chord-seq :empty t)))
-                 (setf (LMidic cseq) '((6400 6700 6000)))
-                 cseq)))
-          (c (progn
-               ;; Different note(s)
-               (let ((cseq (mki 'chord-seq :empty t)))
-                 (setf (LMidic cseq) '((6000 6500 6700)))
-                 cseq))))
-     (dsg-test::check
-       (dsg::equivalent a (clone a))
-       (dsg::equivalent a b)
-       (not (dsg::equivalent a c))))))
+(let* ((a (progn
+            (let ((cseq (mki 'chord-seq :empty t)))
+              (setf (LMidic cseq) '((6000 6400 6700)))
+              cseq)))
+       (b (progn
+            (let ((cseq (mki 'chord-seq :empty t)))
+              (setf (LMidic cseq) '((6400 6700 6000)))
+              cseq)))
+       (c (progn
+            (let ((cseq (mki 'chord-seq :empty t)))
+              (setf (LMidic cseq) '((6000 6500 6700)))
+              cseq))))
+
+  ;;                  ;; TEST NAME
+  (dsg-test::unittest dsg-test::equivalent-chord-seq---cloned-chord
+                      ;; PASS CONDITION
+                      (dsg::equivalent a (clone a)))
+
+  ;;                  ;; TEST NAME
+  (dsg-test::unittest dsg-test::equivalent-chord-seq---same-notes-different-order
+                      ;; PASS CONDITION
+                      (dsg::equivalent a b))
+
+  ;;                  ;; TEST NAME
+  (dsg-test::unittest dsg-test::equivalent-chord-seq---different-notes
+                      ;; PASS CONDITION
+                      (not (dsg::equivalent a c)))
+
+  )

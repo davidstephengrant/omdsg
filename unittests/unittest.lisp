@@ -63,7 +63,8 @@
 (defvar *unittests* nil)
 
 ;; Set vars to nil (in case lib is reloaded)
-(setf *unittests* nil *test-name* nil)
+(setf *test-name* nil)
+(setf *unittests* nil)
 
 (om::defmethod! run-unittests ()
                 :icon 800
@@ -76,6 +77,12 @@ Returns t if all tests passed or nil if any failed.
         collect (funcall test) into results
         finally return (notany #'null results)))
 
+(defmacro unittest (name case)
+  `(dsg-test::add-unittest
+   (dsg-test::deftest ,name ()
+     (dsg-test::check
+       ,case))))
+
 (defun add-unittest (test-function)
   "Register a unit test to be included in run-unittests()."
   (setf *unittests* (append *unittests* (list test-function))))
@@ -85,13 +92,13 @@ Returns t if all tests passed or nil if any failed.
    other test functions or use 'check' to run individual test
    cases."
   `(defun ,name ,parameters
-    (let ((*test-name* (append *test-name* (list ',name))))
+    (let ((*test-name* (append *test-name* ',name)))
       ,@body)))
 
 (defmacro check (&body forms)
   "Run each expression in 'forms' as a test case."
   `(combine-results
-    ,@(loop for f in forms collect `(report-result ,f ',f))))
+    ,@(loop for f in forms collect `(report-result ,f))))
 
 (defmacro combine-results (&body forms)
   "Combine the results (as booleans) of evaluating 'forms' in order."
@@ -100,9 +107,9 @@ Returns t if all tests passed or nil if any failed.
       ,@(loop for f in forms collect `(unless ,f (setf ,result nil)))
       ,result)))
 
-(defun report-result (result form)
+(defun report-result (result)
   "Report the results of a single test case. Called by 'check'."
-  (let ((str (format nil "~&~:[FAIL~;pass~] ... ~a: ~a" result *test-name* form)))
+  (let ((str (format nil "~&~:[FAIL~;pass~] ... ~a" result *test-name*)))
     (write str :stream om::*om-stream* :escape nil))
   (terpri om::*om-stream*)
   result)
