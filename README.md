@@ -12,8 +12,6 @@ This project is licensed under GPLv3.0
 
 Copyright (C) 2018  David Stephen Grant
 
-Unit test framework based on "Chapter 9: Building a Unit Test Framework" in Peter Seibel's book "Practical Common Lisp" (Apress, 2005) - Copyright (c) 2005, Peter Seibel All rights reserved.
-
 Icons by [Font Awesome](https://github.com/FortAwesome) - CC BY 4.0 License
 
 See the [LICENSE](LICENSE) file for details

@@ -20,6 +20,27 @@
 
 (in-package :om)
 
+(defmethod! dsg::order-chords ((self chord))
+            :icon 700
+            (let ((out-chrd (mki 'chord :empty t))
+                  (data (sort (mapcar #'(lambda (offset data) (cons offset data))
+                                      (LOffset self)
+                                      (inside self))
+                              #'< :key #'(lambda (thisnote) (midic (cdr thisnote))))))
+
+              (setf (inside out-chrd) (mapcar #'cdr data))
+              (setf (LOffset out-chrd) (mapcar #'car data))
+              out-chrd))
+
+(defmethod! dsg::order-chords ((self chord-seq))
+            (let ((out-cs (mki 'chord-seq :empty t))
+                  (data (mapcar #'(lambda (ons dat) (cons ons dat))
+                                (lonset self)
+                                (mapcar #'dsg::order-chords (inside self)))))
+              (setf (inside out-cs) (mapcar #'cdr data))
+              (setf (lonset out-cs) (mapcar #'car data))
+              out-cs))
+
 (defmethod! dsg::split-chords ((self chord-seq))
             :icon 700
             :doc "Split chords into single-note chords.
@@ -41,6 +62,32 @@
         for offset in (LOffset self)
         do (setf (slot-value note 'offset) offset)
         collect (objfromobjs note (mki 'chord))))
+
+(defmethod! dsg::split-at-mc ((self chord-seq) &optional (splitpoint 6000))
+            :icon 700
+            :doc "Split <self> into multiple chord-seqs (wrapped in a multiseq) determined by <splitpoint>.
+
+Any notes with pitch higher than or equal to <splitpoint> will be copied to the first chord-seq. Any notes with pitch lower than <splitpoint> will be copied to the second chord-seq.
+
+Returns a multi-seq."
+            :indoc '("a chord-seq" "a number (midicent)")
+            t)
+
+(defmethod! dsg::split-at-mc ((self chord) &optional (splitpoint 6000))
+              (loop for note in (inside self)
+                    for offset in (LOffset self)
+                    if (< (midic note) splitpoint)
+                      collect (cons offset note) into second
+                    else
+                      collect (cons offset note) into first
+                    finally return (list (cond ((null first) (mki 'chord :empty t))
+                                               (t (let ((chrd (objfromobjs (mapcar #'cdr first) self)))
+                                                    (setf (LOffset chrd) (mapcar #'car first))
+                                                    chrd)))
+                                         (cond ((null second) (mki 'chord :empty t))
+                                               (t (let ((chrd (objfromobjs (mapcar #'cdr second) self)))
+                                                    (setf (LOffset chrd) (mapcar #'car second))
+                                                    chrd))))))
 
 (defmethod dsg::remove-unison-roots ((self chord))
   (objfromobjs (dsg::remove-unison-roots (inside self)) self))

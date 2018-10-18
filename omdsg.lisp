@@ -19,30 +19,40 @@
 ;=========================================================================
 
 (defvar dsg)
-
 (defpackage dsg)
+
+(defvar dsg-test)
+(defpackage dsg-test)
 
 (in-package :om)
 
 (defvar dsg::*lib* (find-library "omdsg"))
-(set-lib-release 0.02 dsg::*lib*)
+(set-lib-release 0.03 dsg::*lib*)
 
 ;;; Load sources
 (defvar dsg::*srcfiles* nil)
+(defvar dsg-test::*unittestfiles* nil)
+(defvar dsg-test::*unittests* nil)
+;; Set to nil in case package is reloaded
+(setf dsg-test::*unittests* nil)
 
 (setf dsg::*srcfiles*
       (list
        (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "sources")) :name "basic-tools" :type "lisp")
        (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "sources")) :name "chord-utils" :type "lisp")
-       ;; Unit tests
-       (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "unittests")) :name "unittest" :type "lisp")
-       (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "unittests")) :name "test-basic-tools" :type "lisp")
-       (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "unittests")) :name "test-chord-utils" :type "lisp")
-       ;; Documentation
        (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "sources")) :name "reference" :type "lisp")
        ))
 
+(setf dsg-test::*unittestfiles*
+      (list
+       (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "unittests")) :name "unittest-utils" :type "lisp")
+       (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "unittests" "functions")) :name "equivalent" :type "lisp")
+       (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "unittests" "functions")) :name "split-chords" :type "lisp")
+       (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "unittests" "functions")) :name "truncate-overlaps" :type "lisp")
+       ))
+
 (mapc #'compile&load dsg::*srcfiles*)
+(mapc #'compile&load dsg-test::*unittestfiles*)
 
 ;;; Setup menu structure and (sub) packages
 ;; Syntax: ("sub package name" subpackages-list class-list function-list class-alias-list)
