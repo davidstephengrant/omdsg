@@ -90,8 +90,6 @@
                            (setf (LOffset self1) '(300 400))
                            (setf (LMidic self2) '(5800 5900))
                            (setf (LOffset self2) '(100 200))
-                           (print (dsg::self-to-data self1))
-                           (print (dsg::self-to-data self2))
                            (list self1 self2)))
                (result (dsg::split-at-mc original)))
            (notany #'null (mapcar #'dsg::equivalent expected result))))
