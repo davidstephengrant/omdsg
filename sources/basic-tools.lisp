@@ -20,15 +20,22 @@
 
 (in-package :om)
 
-(defmethod! dsg::equivalent ((a chord-seq) (b chord-seq))
+(defmethod! dsg::equivalent ((a multi-seq) (b multi-seq))
             :icon 100
             (cond ((eq a b) t)
+                  ((not (= (length (inside a)) (length (inside b)))) nil)
+                  (t (notany #'null (loop for cseq-a in (inside a)
+                                          for cseq-b in (inside b)
+                                          collect (dsg::equivalent cseq-a cseq-b))))))
+
+(defmethod! dsg::equivalent ((a chord-seq) (b chord-seq))
+            (cond ((eq a b) t)
+                  ;; For documentation: extent of chord-seqs is ignored
                   (t (notany #'null (mapcar #'equalp
                                             (dsg::self-to-data (dsg::order-chords a))
                                             (dsg::self-to-data (dsg::order-chords b)))))))
 
 (defmethod! dsg::equivalent ((a chord) (b chord))
-            :icon 100
             (cond ((eq a b) t)
                   (t (notany #'null (mapcar #'equalp
                                             (dsg::self-to-data (dsg::order-chords a))
@@ -36,7 +43,8 @@
 
 (defmethod dsg::self-to-data ((self chord-seq))
   (list (LMidic self)
-        (LOnset self)
+        ;; Ignores extent of chord-seq
+        (notEndLOnset self)
         (LDur self)
         (LVel self)
         (LOffset self)

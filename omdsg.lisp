@@ -47,6 +47,7 @@
       (list
        (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "unittests")) :name "unittest-utils" :type "lisp")
        (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "unittests" "functions")) :name "equivalent" :type "lisp")
+       (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "unittests" "functions")) :name "split-at-mc" :type "lisp")
        (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "unittests" "functions")) :name "split-chords" :type "lisp")
        (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "unittests" "functions")) :name "truncate-overlaps" :type "lisp")
        ))
@@ -61,10 +62,11 @@
    ("Chord Utilities" nil nil (dsg::order-chords
                                dsg::realize-offsets
                                dsg::remove-unisons
+                               dsg::split-at-mc
                                dsg::split-chords
                                dsg::truncate-overlaps
                                ) nil)
-   ("Unit Tests" nil nil (dsg-test::run-unittests) nil)
+   ("Unit Tests" nil nil (dsg::run-unittests) nil)
    ))
 
 ;;; Dependencies

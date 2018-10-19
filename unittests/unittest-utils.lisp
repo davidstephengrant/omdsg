@@ -28,7 +28,7 @@
 (defun dsg-test::add-unittest (label test-function)
   (setf dsg-test::*unittests* (cons (cons label test-function) dsg-test::*unittests*)))
 
-(defmethod! dsg-test::run-unittests ()
+(defmethod! dsg::run-unittests ()
             :icon 800
             :doc "
 Runs all unit tests registered for library omdsg.

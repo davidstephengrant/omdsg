@@ -67,11 +67,25 @@
             :icon 700
             :doc "Split <self> into multiple chord-seqs (wrapped in a multiseq) determined by <splitpoint>.
 
-Any notes with pitch higher than or equal to <splitpoint> will be copied to the first chord-seq. Any notes with pitch lower than <splitpoint> will be copied to the second chord-seq.
+Any notes with pitch higher than or equal to <splitpoint> will be copied to the first chord or chord-seq. Any notes with pitch lower than <splitpoint> will be copied to the second chord or chord-seq.
 
-Returns a multi-seq."
-            :indoc '("a chord-seq" "a number (midicent)")
-            t)
+Returns a multi-seq when <self> is a chord-seq, or a list of chords when <self> is a chord."
+            :indoc '("a chord or chord-seq" "a number (midicent)")
+            (loop for chord in (inside self)
+                  for onset in (LOnset self)
+                  collect (cons onset (car (dsg::split-at-mc chord splitpoint))) into above
+                  collect (cons onset (cadr (dsg::split-at-mc chord splitpoint))) into below
+                  finally return (let ((out-multi (mki 'multi-seq :empty t))
+                                       (cseq-above (mki 'chord-seq :empty t))
+                                       (cseq-below (mki 'chord-seq :empty t))
+                                       (cleaned-chords-above (remove-if #'(lambda (x) (null (LMidic (cdr x)))) above))
+                                       (cleaned-chords-below (remove-if #'(lambda (x) (null (LMidic (cdr x)))) below)))
+                                   (setf (inside cseq-above) (mapcar #'cdr cleaned-chords-above))
+                                   (setf (LOnset cseq-above) (mapcar #'car cleaned-chords-above))
+                                   (setf (inside cseq-below) (mapcar #'cdr cleaned-chords-below))
+                                   (setf (LOnset cseq-below) (mapcar #'car cleaned-chords-below))
+                                   (setf (chord-seqs out-multi) (list cseq-above cseq-below))
+                                   out-multi)))
 
 (defmethod! dsg::split-at-mc ((self chord) &optional (splitpoint 6000))
               (loop for note in (inside self)
