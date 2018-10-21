@@ -20,6 +20,18 @@
 
 (in-package :om)
 
+(defmethod! dsg::enumerate-files ((dir pathname) &optional (type :wild) (name-root ""))
+            :icon 700
+            :doc "Collect paths to all files in directory <dir> and return them as a list of paths.
+
+Extensions for file types to match may be provided as a string for argument <type>.
+
+The root of file names to match (in this context the first characters) may be provided as a string to <name-root>."
+            :indoc '("a directory pathname" "a string" "a string")
+  (loop for file in (directory (make-pathname :directory (pathname-directory dir) :name :wild :type type))
+        if (string= name-root (subseq (pathname-name file) 0 (min (length (pathname-name file)) (length name-root))))
+        collect file))
+
 (defmethod! dsg::equivalent ((a multi-seq) (b multi-seq))
             :icon 100
             (cond ((eq a b) t)

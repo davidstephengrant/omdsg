@@ -41,6 +41,8 @@
        (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "sources")) :name "basic-tools" :type "lisp")
        (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "sources")) :name "chord-utils" :type "lisp")
        (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "sources")) :name "reference" :type "lisp")
+       ;; Libraries
+       (make-pathname  :directory (append (pathname-directory *load-pathname*) (list "libraries" "cl-utilities")) :name "split-sequence" :type "lisp")
        ))
 
 (setf dsg-test::*unittestfiles*
@@ -58,7 +60,8 @@
 ;;; Setup menu structure and (sub) packages
 ;; Syntax: ("sub package name" subpackages-list class-list function-list class-alias-list)
 (fill-library 
- '(("Basic Tools" nil nil (dsg::equivalent) nil)
+ '(("Basic Tools" nil nil (dsg::enumerate-files
+                           dsg::equivalent) nil)
    ("Chord Utilities" nil nil (dsg::order-chords
                                dsg::realize-offsets
                                dsg::remove-unisons
@@ -66,11 +69,9 @@
                                dsg::split-chords
                                dsg::truncate-overlaps
                                ) nil)
+   ("cl-utilities" nil nil (dsg::split-sequence) nil)
    ("Unit Tests" nil nil (dsg::run-unittests) nil)
    ))
-
-;;; Dependencies
-;(require-library "omdsg")
 
 ;;; Documentation
 ;; Lib docstring for {$RESOURCES}/reference/index.html
