@@ -20,6 +20,15 @@
 
 (in-package :om)
 
+#+(or linux macosx)
+;; TODO: currently untested
+(defun dsg::call-system (str)
+  (sys:run-shell-command str :wait wait))
+
+#+windows
+(defun dsg::call-system (str)
+  (sys:call-system str :wait t :current-directory nil))
+
 (defmethod! dsg::enumerate-files ((dir pathname) &optional (type :wild) (name-root ""))
             :icon 700
             :doc "Collect paths to all files in directory <dir> and return them as a list of paths.
@@ -68,3 +77,10 @@ The root of file names to match (in this context the first characters) may be pr
         (LOffset self)
         (LDur self)
         (LChan self)))
+
+(defmethod! dsg::shell ((str string))
+            :icon 700
+            :indoc '("a system command string")
+            :initvals '("")
+            :doc "Sends the command <str> to the system."
+            (dsg::call-system str))
